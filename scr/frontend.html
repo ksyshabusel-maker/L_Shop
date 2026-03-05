@@ -1,0 +1,104 @@
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Доставка</title>
+<style>
+body { font-family: Arial; background: #f7f7f7; margin: 0; padding: 20px; }
+h1 { text-align: center; color: #333; }
+.orders { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 20px auto; }
+.order-card { background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.order-card p { margin: 5px 0; }
+.order-card .products { font-size: 0.9em; color: #555; }
+form { max-width: 600px; margin: 30px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px; }
+input, select, button { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1em; }
+button { background: #4CAF50; color: #fff; border: none; cursor: pointer; }
+button:hover { background: #45a049; }
+.products-list { display: flex; flex-direction: column; gap: 5px; }
+.product-row { display: flex; gap: 5px; }
+.product-row input { flex: 1; }
+</style>
+</head>
+<body>
+
+<h1>Заказы доставки</h1>
+
+<div class="orders" id="orders"></div>
+
+<form id="deliveryForm">
+  <input type="text" name="user" placeholder="Имя пользователя" required>
+  <input type="text" name="address" placeholder="Адрес" required>
+  <input type="text" name="phone" placeholder="Телефон" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <select name="payment" required>
+    <option value="card">Карта</option>
+    <option value="cash">Наличка</option>
+  </select>
+
+  <div class="products-list" id="productsList">
+    <div class="product-row">
+      <input type="text" placeholder="ID продукта" required>
+      <input type="number" placeholder="Количество" required min="1">
+    </div>
+  </div>
+  <button type="button" id="addProduct">Добавить товар</button>
+
+  <button type="submit">Создать заказ</button>
+</form>
+
+<script>
+const ordersDiv = document.getElementById('orders')
+const form = document.getElementById('deliveryForm')
+const productsList = document.getElementById('productsList')
+const addProductBtn = document.getElementById('addProduct')
+
+async function loadDeliveries() {
+  const res = await fetch('http://localhost:3000/api/delivery/delivery')
+  const deliveries = await res.json()
+  ordersDiv.innerHTML = deliveries.map(d => `
+    <div class="order-card">
+      <p><strong>ID:</strong> ${d.id}</p>
+      <p><strong>User:</strong> ${d.user}</p>
+      <p><strong>Адрес:</strong> ${d.address}</p>
+      <p><strong>Телефон:</strong> ${d.phone}</p>
+      <p><strong>Email:</strong> ${d.email}</p>
+      <p><strong>Оплата:</strong> ${d.payment}</p>
+      <p class="products"><strong>Товары:</strong> ${JSON.stringify(d.products)}</p>
+    </div>
+  `).join('')
+}
+
+addProductBtn.addEventListener('click', () => {
+  const row = document.createElement('div')
+  row.className = 'product-row'
+  row.innerHTML = '<input type="text" placeholder="ID продукта" required> <input type="number" placeholder="Количество" required min="1">'
+  productsList.appendChild(row)
+})
+
+form.addEventListener('submit', async e => {
+  e.preventDefault()
+  const formData = new FormData(form)
+  const data = Object.fromEntries(formData.entries())
+  
+  const products = Array.from(productsList.querySelectorAll('.product-row')).map(row => {
+    const inputs = row.querySelectorAll('input')
+    return { productId: inputs[0].value, quantity: parseInt(inputs[1].value) }
+  })
+  
+  data.products = products
+  
+  await fetch('http://localhost:3000/api/delivery/delivery', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  
+  form.reset()
+  productsList.innerHTML = '<div class="product-row"><input type="text" placeholder="Product ID" required> <input type="number" placeholder="Quantity" required min="1"></div>'
+  loadDeliveries()
+})
+
+loadDeliveries()
+</script>
+
+</body>
+</html>

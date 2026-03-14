@@ -1,0 +1,40 @@
+[
+  {
+    "userId": "123",
+    "items": [
+      {
+        "productId": "1",
+        "quantity": 2
+      },
+      {
+        "productId": "5",
+        "quantity": 1
+      }
+    ],
+    "address": "ул. Ленина, 5",
+    "phone": "+79991234567",
+    "email": "test@example.com",
+    "paymentMethod": "card",
+    "id": "1",
+    "createdAt": "2026-03-05T19:19:09.259Z"
+  },
+  {
+    "userId": "234",
+    "address": "ул. Ленина, 5",
+    "phone": "+375336134704",
+    "email": "TheReObscura@gmail.com",
+    "paymentMethod": "карта",
+    "items": [
+      {
+        "productId": "1",
+        "quantity": 2
+      },
+      {
+        "productId": "5",
+        "quantity": 1
+      }
+    ],
+    "id": "2",
+    "createdAt": "2026-03-05T19:55:51.014Z"
+  }
+]

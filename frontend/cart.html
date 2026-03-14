@@ -1,0 +1,148 @@
+<html>
+<head>
+    <title>Корзина</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .cart-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 0 3px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #f0f0f0;
+        }
+        .delete-btn {
+            color: red;
+            border-color: red;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: right;
+        }
+        .checkout-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .checkout-btn:hover {
+            background: #218838;
+        }
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container" data-title="basket" data-price="basket">
+        <h1>Корзина</h1>
+        <div id="items"></div>
+        <div class="total" id="total">Итого: 0 ₽</div>
+        <button class="checkout-btn" id="checkoutBtn">Оформить доставку</button>
+    </div>
+    <script>
+        async function loadCart() {
+            const res = await fetch('/api/cart');
+            const cart = await res.json();     
+            let html = '';
+            let total = 0;     
+            if (!cart.items || cart.items.length === 0) {
+                html = '<div class="empty-cart">Корзина пуста</div>';
+            } else {
+                cart.items.forEach(item => {
+                    const price = 1000;
+                    const itemTotal = price * item.quantity;
+                    total += itemTotal;
+                    html += `
+                        <div class="cart-item" data-cart-item="${item.productId}">
+                            <span>
+                                <span data-title="basket">Товар ${item.productId}</span><br>
+                                <span data-price="basket">${price} ₽</span>
+                            </span>
+                            <div>
+                                <button onclick="update('${item.productId}', 'add')">+</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="update('${item.productId}', 'remove')">-</button>
+                                <button class="delete-btn" onclick="update('${item.productId}', 'delete')">Удалить</button>
+                            </div>
+                            <span style="font-weight: bold;">${itemTotal} ₽</span>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('items').innerHTML = html;
+            document.getElementById('total').innerHTML = `Итого: ${total} ₽`;
+        }
+        async function update(productId, action) {
+            if (action === 'add') {
+                await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+            } else if (action === 'remove') {
+                await fetch('/api/cart/remove-one', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+            } else {
+                await fetch(`/api/cart/remove/${productId}`, { 
+                    method: 'DELETE' 
+                });
+            }
+            await loadCart();
+        }
+        document.getElementById('checkoutBtn').onclick = async () => {
+            const cart = await fetch('/api/cart').then(res => res.json());
+            if (!cart.items || cart.items.length === 0) {
+                alert('Корзина пуста! Добавьте товары перед оформлением');
+                return;
+            }
+            if (confirm('Оформить доставку?')) {
+                await fetch('/api/cart/clear', { method: 'POST' });
+                alert('Заказ оформлен');
+                await loadCart();
+            }
+        };
+        window.onload = () => {
+            loadCart();
+        };
+    </script>
+</body>
+</html>

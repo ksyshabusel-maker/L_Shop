@@ -60,7 +60,7 @@ export const Catalog = () => {
         {products.length ? (
           products.map(product => (
             <div key={product.id} style={{
-              border: '1px solid #eee', borderRadius: '8px', 
+              border: '1px solid #312f2fff', borderRadius: '8px', 
               padding: '1rem', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
             }}>
               <h3 data-title={product.title}>{product.title}</h3>

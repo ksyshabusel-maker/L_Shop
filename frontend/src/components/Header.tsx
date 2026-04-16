@@ -18,18 +18,18 @@ export const Header = () => {
   };
 
   return (
-    <header style={{background: '#333', color: 'white', padding: '1rem'}}>
-      <nav style={{display: 'flex', gap: '1rem'}}>
-        <a href="/" style={{color: 'white'}}>🏠 Главная</a>
-        <a href="/cart" style={{color: 'white'}}>🛒 Корзина</a>
-        {user ? (
-          <>
-            👋 {user.name} <button onClick={logout} style={{color: 'orange'}}>Выйти</button>
-          </>
-        ) : (
-          <a href="/auth" style={{color: 'white'}}>🔐 Войти</a>
-        )}
-      </nav>
-    </header>
+   // В Header.tsx найди nav и замени:
+<nav style={{display: 'flex', gap: '1rem'}}>
+  <a href="#catalog" style={{color: 'white'}}>🏠 Главная</a>
+  <a href="#cart" style={{color: 'white'}}>🛒 Корзина</a>
+  {user ? (
+    <>
+      👋 {user.name} 
+      <button onClick={logout} style={{color: 'orange'}}>Выйти</button>
+    </>
+  ) : (
+    <a href="#auth" style={{color: 'white'}}>🔐 Войти</a>
+  )}
+</nav>
   );
 };

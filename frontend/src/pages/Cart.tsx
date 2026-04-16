@@ -1,91 +1,104 @@
 import { useState, useEffect } from 'react';
-import { shopApi } from '../api/shopApi';
-import type { CartItem } from '../types';
+
+interface CartItem {
+  productId: number;
+  title: string;
+  price: number;
+  quantity: number;
+}
 
 export const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Мок-данные корзины
   useEffect(() => {
-    shopApi.cart()
-      .then(res => {
-        setCart(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        alert('Авторизуйтесь для просмотра корзины');
-        window.location.href = '/auth';
-        setLoading(false);
-      });
+    setTimeout(() => {
+      setCart([
+        { productId: 1, title: "Samsung", price: 1500, quantity: 2 },
+      ]);
+      setLoading(false);
+    }, 500);
   }, []);
 
-  const updateQuantity = async (productId: number, quantity: number) => {
+  const updateQuantity = (productId: number, quantity: number) => {
     if (quantity < 1) return removeFromCart(productId);
-    try {
-      await shopApi.updateCart(productId, quantity);
-      setCart(prev => prev.map(item => 
-        item.productId === productId ? { ...item, quantity } : item
-      ));
-    } catch (error) {
-      alert('Ошибка обновления корзины');
-    }
+    setCart(prev => prev.map(item =>
+      item.productId === productId ? { ...item, quantity } : item
+    ));
   };
 
-  const removeFromCart = async (productId: number) => {
-    try {
-      await shopApi.removeFromCart(productId);
-      setCart(prev => prev.filter(item => item.productId !== productId));
-    } catch (error) {
-      alert('Ошибка удаления');
-    }
+  const removeFromCart = (productId: number) => {
+    setCart(prev => prev.filter(item => item.productId !== productId));
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  if (loading) return <div>Загрузка корзины...</div>;
+  if (loading) {
+    return (
+      <div className="cart-empty">
+        <div className="loading-spinner">⏳ Загрузка корзины...</div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>🛒 Корзина</h1>
-      
+    <div className="cart-page">
+      <h1 className="cart-title">🛒 Корзина</h1>
+
       {cart.length === 0 ? (
-        <p>Корзина пуста. <a href="/">Перейти в каталог</a></p>
+        <div className="cart-empty">
+          <div className="empty-icon">🛒</div>
+          <h2>Корзина пуста</h2>
+          <a href="#catalog" className="empty-button">
+            Перейти в каталог →
+          </a>
+        </div>
       ) : (
         <>
-          <div style={{ display: 'grid', gap: '1rem', maxWidth: '800px' }}>
+          <div className="cart-list">
             {cart.map(item => (
-              <div key={item.productId} style={{
-                display: 'flex', gap: '1rem', padding: '1rem',
-                border: '1px solid #eee', borderRadius: '8px'
-              }}>
-                <div style={{ flex: 1 }}>
-                  <h3 data-title="basket">{item.title}</h3>
-                  <p data-price="basket">{item.price.toFixed(2)}₽</p>
+              <div key={item.productId} className="cart-item">
+                <div className="cart-item-details">
+                  <h3 className="item-title">{item.title}</h3>
+                  <p className="item-price">{item.price.toLocaleString()}₽</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <button onClick={() => updateQuantity(item.productId, item.quantity - 1)}>-</button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.productId, item.quantity + 1)}>+</button>
-                  <button onClick={() => removeFromCart(item.productId)} style={{ color: 'red' }}>🗑️</button>
+                <div className="cart-item-controls">
+                  <div className="quantity-controls">
+                    <button
+                      onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                      className="qty-btn"
+                    >
+                      -
+                    </button>
+                    <span className="qty">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                      className="qty-btn"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(item.productId)}
+                    className="remove-btn"
+                  >
+                    🗑 
+                  </button>
                 </div>
-                <strong>{(item.price * item.quantity).toFixed(2)}₽</strong>
+                <div className="item-total">
+                  {(item.price * item.quantity).toLocaleString()}₽
+                </div>
               </div>
             ))}
           </div>
 
-          <div style={{ 
-            marginTop: '2rem', padding: '1rem', 
-            background: '#f8f9fa', borderRadius: '8px', textAlign: 'right'
-          }}>
-            <h2>Итого: {total.toFixed(2)}₽</h2>
-            <a href="/delivery">
-              <button style={{
-                background: '#28a745', color: 'white', 
-                padding: '1rem 2rem', border: 'none', 
-                borderRadius: '8px', fontSize: '1.1rem', cursor: 'pointer'
-              }}>
-                🧾 Оформить доставку
-              </button>
+          <div className="cart-summary">
+            <div className="summary-total">
+              <h2>Итого: {total.toLocaleString()}₽</h2>
+            </div>
+            <a href="#delivery" className="checkout-btn">
+              🧾 Оформить доставку
             </a>
           </div>
         </>

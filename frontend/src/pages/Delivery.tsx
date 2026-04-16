@@ -97,7 +97,7 @@ export const Delivery = () => {
       </form>
 
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <a href="/cart" style={{ color: '#007bff' }}>← Назад в корзину</a>
+        <a href="/cart" style={{ color: '#272829ff' }}>← Назад в корзину</a>
       </div>
     </div>
   );

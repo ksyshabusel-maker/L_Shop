@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { shopApi } from '../api/shopApi';
 
 export const Auth = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -16,17 +15,12 @@ export const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    try {
-      if (isRegister) {
-        await shopApi.register(form);
-      } else {
-        await shopApi.login({ login: form.login, password: form.password });
-      }
-      window.location.href = '/';
-    } catch (error) {
-      alert(isRegister ? 'Ошибка регистрации' : 'Неверный логин/пароль');
+    // Мок авторизация
+    setTimeout(() => {
+      alert(isRegister ? '✅ Регистрация успешна!' : '✅ Вход выполнен!');
+      window.location.hash = '#catalog';
       setLoading(false);
-    }
+    }, 1500);
   };
 
   const handleChange = (field: string, value: string) => {
@@ -34,80 +28,74 @@ export const Auth = () => {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '400px', margin: '4rem auto', 
-      padding: '2rem', border: '1px solid #ddd', 
-      borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-    }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-        {isRegister ? '👤 Регистрация' : '🔐 Вход'}
-      </h1>
-      
-      <form 
-        data-registration
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-      >
-        {isRegister && (
-          <>
-            <input
-              required
-              placeholder="👤 Имя"
-              value={form.name}
-              onChange={e => handleChange('name', e.target.value)}
-            />
-            <input
-              type="email"
-              required
-              placeholder="📧 Email"
-              value={form.email}
-              onChange={e => handleChange('email', e.target.value)}
-            />
-            <input
-              required
-              placeholder="📱 Телефон"
-              value={form.phone}
-              onChange={e => handleChange('phone', e.target.value)}
-            />
-          </>
-        )}
-        <input
-          required
-          placeholder="🔑 Логин"
-          value={form.login}
-          onChange={e => handleChange('login', e.target.value)}
-        />
-        <input
-          required
-          type="password"
-          placeholder="🔒 Пароль"
-          value={form.password}
-          onChange={e => handleChange('password', e.target.value)}
-        />
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 className="auth-title">
+          {isRegister ? '👤 Регистрация' : '🔐 Вход'}
+        </h1>
         
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{
-            background: loading ? '#6c757d' : '#007bff',
-            color: 'white', padding: '1rem',
-            border: 'none', borderRadius: '8px',
-            fontSize: '1.1rem', cursor: 'pointer'
-          }}
-        >
-          {loading ? '⏳ Загрузка...' : (isRegister ? 'Создать аккаунт' : 'Войти')}
-        </button>
-      </form>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {isRegister && (
+            <>
+              <input
+                className="auth-input"
+                placeholder="👤 Имя"
+                value={form.name}
+                onChange={e => handleChange('name', e.target.value)}
+                required
+              />
+              <input
+                className="auth-input"
+                type="email"
+                placeholder="📧 Email"
+                value={form.email}
+                onChange={e => handleChange('email', e.target.value)}
+                required
+              />
+              <input
+                className="auth-input"
+                placeholder="📱 Телефон"
+                value={form.phone}
+                onChange={e => handleChange('phone', e.target.value)}
+                required
+              />
+            </>
+          )}
+          <input
+            className="auth-input"
+            placeholder="🔑 Логин"
+            value={form.login}
+            onChange={e => handleChange('login', e.target.value)}
+            required
+          />
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="🔒 Пароль"
+            value={form.password}
+            onChange={e => handleChange('password', e.target.value)}
+            required
+          />
+          
+          <button 
+            className={`auth-button ${loading ? 'loading' : ''}`}
+            type="submit" 
+            disabled={loading}
+          >
+            {loading ? '⏳ Загрузка...' : (isRegister ? 'Создать аккаунт' : 'Войти')}
+          </button>
+        </form>
 
-      <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-        <button 
-          type="button" 
-          onClick={() => setIsRegister(!isRegister)}
-          style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer' }}
-        >
-          {isRegister ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Регистрация'}
-        </button>
-      </p>
+        <p className="auth-toggle">
+          <button 
+            type="button" 
+            onClick={() => setIsRegister(!isRegister)}
+            className="toggle-link"
+          >
+            {isRegister ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Регистрация'}
+          </button>
+        </p>
+      </div>
     </div>
   );
 };

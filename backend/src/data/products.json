@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "title": "Ноутбук Apple MacBook Air 13",
+    "description": "M1, 8GB RAM, 256GB SSD",
+    "price": 99900,
+    "category": "ноутбуки",
+    "inStock": true,
+    "imageUrl": "/images/macbook.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Смартфон iPhone 15",
+    "description": "128GB, черный",
+    "price": 79900,
+    "category": "смартфоны",
+    "inStock": true,
+    "imageUrl": "/images/iphone15.jpg"
+  },
+  {
+    "id": "3",
+    "title": "Наушники Sony WH-1000XM5",
+    "description": "Беспроводные, шумоподавление",
+    "price": 34900,
+    "category": "аксессуары",
+    "inStock": true,
+    "imageUrl": "/images/sony.jpg"
+  }
+]

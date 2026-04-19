@@ -1,0 +1,15 @@
+{
+  "short_name": "TechShop",
+  "name": "TechShop - Магазин электроники",
+  "icons": [
+    {
+      "src": "vite.svg",
+      "sizes": "48x48 72x72 96x96 144x144",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#6366f1",
+  "background_color": "#f8f9fa"
+}
